@@ -1,4 +1,8 @@
 const express = require('express');
+
+const bcrypt = require('bcrypt');
+
+const _ = require('underscore');
 const app = express();
 const User = require('../models/user');
 
@@ -11,20 +15,41 @@ app.use(bodyParser.json());
 
 
 app.get('/user', (request, response) => {
-    response.json('getUser');
+
+    let since = Number(request.query.since) || 0;
+    let limit = Number(request.query.limit) || 5;
+
+    User.find({ status: true }, 'name email img status role google')
+        .skip(since)
+        .limit(limit)
+        .exec((error, users) => {
+            if (error) {
+                return response.json({
+                    ok: false,
+                    error
+                });
+            }
+
+            User.count({ status: true }, (error, count) => {
+                response.json({
+                    ok: true,
+                    users,
+                    numOfUsers: count
+                });
+            });
+
+        });
+
 });
 
 
 app.post('/user', (request, response) => {
     let body = request.body;
 
-    console.log(body);
-
-
     let user = new User({
         name: body.name,
         email: body.email,
-        password: body.password,
+        password: bcrypt.hashSync(body.password, 10),
         role: body.role
     });
 
@@ -34,12 +59,13 @@ app.post('/user', (request, response) => {
                 ok: false,
                 error
             });
-        } else {
-            return response.json({
-                ok: true,
-                user: userDB
-            });
         }
+
+        return response.json({
+            ok: true,
+            user: userDB
+        });
+
     });
 
 
@@ -48,11 +74,39 @@ app.post('/user', (request, response) => {
 
 app.put('/user/:id', (request, response) => {
     let id = request.params.id;
-    response.json('putUser');
+    let body = _.pick(request.body, ['name', 'email', 'img', 'role', 'status']);
+
+
+    User.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (error, userDB) => {
+        if (error) {
+            return response.status(400).json({
+                ok: false,
+                error
+            });
+        }
+        response.json({
+            ok: true,
+            user: userDB
+        });
+    });
 });
 
-app.delete('/user', (request, response) => {
-    response.json('deleteUser');
+app.delete('/user/:id', (request, response) => {
+    let id = request.params.id;
+
+    User.findByIdAndUpdate(id, { status: false }, { new: true }, (error, userDB) => {
+        if (error) {
+            return response.status(400).json({
+                ok: false,
+                error
+            });
+        }
+        response.json({
+            ok: true,
+            user: userDB
+        });
+    });
+
 });
 
 module.exports = app;

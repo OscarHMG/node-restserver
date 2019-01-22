@@ -43,6 +43,17 @@ let userSchema = new Schema({
     }
 });
 
+//Delete password field
+userSchema.methods.toJSON = function() {
+    let user = this;
+    let userObject = user.toObject();
+
+    delete userObject.password;
+
+    return userObject;
+}
+
+
 userSchema.plugin(uniqueValidator, {
     message: '{PATH must be unique}'
 });
