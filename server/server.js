@@ -1,33 +1,25 @@
 require('./config/config');
+
 const express = require('express');
-const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+
 const app = express();
 
+app.use(require('./routes/user'));
 
 
-app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
-app.use(bodyParser.json());
 
-app.get('/user', (request, response) => {
-    response.json('getUser');
+
+
+
+mongoose.connect('mongodb://localhost:27017/db-coffee', (error, res) => {
+    if (error) throw error;
+
+    console.log('DB is ready!');
 });
 
 
-app.post('/user', (request, response) => {
-    let body = request.body;
-    response.json('postUser');
-});
-
-
-app.put('/user/:id', (request, response) => {
-    let id = request.params.id;
-    response.json('putUser');
-});
-
-app.delete('/user', (request, response) => {
-    response.json('deleteUser');
-});
 
 app.listen(process.env.PORT, () => {
     console.log('Listen in port:', process.env.PORT);
