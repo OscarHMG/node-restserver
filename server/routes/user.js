@@ -6,6 +6,8 @@ const _ = require('underscore');
 const app = express();
 const User = require('../models/user');
 
+const { verifyToken, verifyRole } = require('../middlewares/auth');
+
 const bodyParser = require('body-parser');
 
 
@@ -14,10 +16,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 
-app.get('/user', (request, response) => {
+app.get('/user', verifyToken, (request, response) => {
 
     let since = Number(request.query.since) || 0;
     let limit = Number(request.query.limit) || 5;
+
 
     User.find({ status: true }, 'name email img status role google')
         .skip(since)
@@ -43,7 +46,7 @@ app.get('/user', (request, response) => {
 });
 
 
-app.post('/user', (request, response) => {
+app.post('/user', [verifyToken, verifyRole], (request, response) => {
     let body = request.body;
 
     let salt = bcrypt.genSaltSync(10);
@@ -73,7 +76,7 @@ app.post('/user', (request, response) => {
 });
 
 
-app.put('/user/:id', (request, response) => {
+app.put('/user/:id', [verifyToken, verifyRole], (request, response) => {
     let id = request.params.id;
     let body = _.pick(request.body, ['name', 'email', 'img', 'role', 'status']);
 
@@ -92,7 +95,7 @@ app.put('/user/:id', (request, response) => {
     });
 });
 
-app.delete('/user/:id', (request, response) => {
+app.delete('/user/:id', [verifyToken, verifyRole], (request, response) => {
     let id = request.params.id;
 
     User.findByIdAndUpdate(id, { status: false }, { new: true }, (error, userDB) => {
