@@ -1,6 +1,6 @@
 const express = require('express');
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt-nodejs');
 
 const _ = require('underscore');
 const app = express();
@@ -46,10 +46,11 @@ app.get('/user', (request, response) => {
 app.post('/user', (request, response) => {
     let body = request.body;
 
+    let salt = bcrypt.genSaltSync(10);
     let user = new User({
         name: body.name,
         email: body.email,
-        password: bcrypt.hashSync(body.password, 10),
+        password: bcrypt.hashSync(body.password, salt),
         role: body.role
     });
 
