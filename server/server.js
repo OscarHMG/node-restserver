@@ -2,8 +2,13 @@ require('./config/config');
 
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
+
+//Enable public folder to access html
+app.use(express.static(path.resolve(__dirname, '../public/')));
+
 
 
 //Global configurations of all the routes

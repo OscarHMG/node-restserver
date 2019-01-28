@@ -18,3 +18,9 @@ process.env.URLDB = urlDB;
 // ============================
 process.env.EXPIRES_TOKEN = 60 * 60 * 24 * 30;
 process.env.SEED_SIGN = process.env.SEED_SIGN || 'seed-dev';
+
+// ============================
+// ======== GOOGLE ID =========
+// ============================
+
+process.env.CLIENT_ID = process.env.CLIENT_ID || '255806002157-815qbkrp38hvkavh655p03i9l244qmqf.apps.googleusercontent.com';
