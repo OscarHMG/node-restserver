@@ -14,7 +14,6 @@ app.post('/login', (req, resp) => {
 
 
         if (error) {
-
             return resp.status(500).json({
                 ok: false,
                 error
