@@ -9,9 +9,11 @@ const app = express();
 //LOGIN WITH NORMAL CREDENTIALS
 app.post('/login', (req, resp) => {
 
-    let body = req.body;
-    User.findOne({ email: body.email }, (error, userDB) => {
+    console.log('Start login');
 
+    let body = req.body;
+    console.log('Body', body);
+    User.findOne({ email: body.email }, (error, userDB) => {
 
         if (error) {
             return resp.status(500).json({
@@ -32,6 +34,7 @@ app.post('/login', (req, resp) => {
 
         //After get user, compare password
         if (!bcrypt.compareSync(body.password, userDB.password)) {
+            console.log('lasdasd');
             return resp.status(400).json({
                 ok: false,
                 error: {
