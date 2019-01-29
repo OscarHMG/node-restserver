@@ -15,7 +15,7 @@ app.use(express.static(path.resolve(__dirname, '../public/')));
 app.use(require('./routes/index'));
 
 //DB Connection
-mongoose.connect('mongodb://user:123qwe@ds163764.mlab.com:63764/db-coffee', (error, res) => {
+mongoose.connect(process.env.URLDB, (error, res) => {
     if (error) throw error;
 
     console.log('DB is ready!');
